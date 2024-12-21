@@ -17,6 +17,10 @@ logging.basicConfig(level=logging.DEBUG)
 file_path = 'model/recipe_final1.csv'
 recipe_df = pd.read_csv(file_path)
 
+file_path = 'model/list_bahan.csv'
+all_bahan = pd.read_csv(file_path)
+bahan = all_bahan['Ingredients'].tolist()
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -28,15 +32,20 @@ def kalkulator():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
+        
         data = request.json
         gender = data['gender']
         umur = int(data['age'])
         list_bahan = data['ingredients']
         
+
         # Validate age
         if umur < 7 or umur > 12:
             return jsonify({'error': 'Umur tidak termasuk anak SD (7-12 tahun)'})
 
+        if list_bahan not in bahan:
+            return jsonify({'error': 'Bahan tidak tersedia didalam dataset'})
+        
         gender_encoded = 1 if gender == 'male' else 0
 
         # Nutrition categories
