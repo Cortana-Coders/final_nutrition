@@ -265,7 +265,7 @@ document.addEventListener("click", function (event) {
     <!-- End Navbar -->
 
    <!-- Nutrition Calculator -->
-<div class="bg-green-300 min-h-[500px] flex justify-center items-center">
+<div class="bg-green-300 min-h-[500px] flex flex-col  items-center">
   <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
     <!-- Header Section -->
     <div class="flex items-center mb-4">
@@ -305,6 +305,22 @@ document.addEventListener("click", function (event) {
     <button id="submit-btn" class="bg-green-400 text-white rounded-lg py-2 px-4 w-full mt-6 hover:bg-green-500 transition">
         Dapatkan Rekomendasi
       </button>      
+  </div>
+  <!--tabel hasil-->
+  <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-7xl mt-4">
+    <h1 style="text-align: center;"><b>Tabel Resep Masakan</b></h1>
+<table id="result-table" border="1">
+    <thead>
+        <tr>
+            <th style="width: 30%;">Recipe Name</th>
+            <th style="width: 40%;">Ingredients</th>
+            <th style="width: 30%;">Image</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Data akan dimasukkan di sini -->
+    </tbody>
+</table>
   </div>
 </div>
 <!-- End Nutrition Calculator -->
@@ -502,68 +518,73 @@ document.addEventListener("click", function (event) {
       <!-- End Footer -->
     <!-- JS -->
     <script>
-        document.getElementById('submit-btn').addEventListener('click', async function(event) {
+      document.getElementById('submit-btn').addEventListener('click', async function(event) {
           event.preventDefault(); // Mencegah reload halaman
-      
+
           // Ambil data dari form
           const gender = document.getElementById('gender').value;
           const age = document.getElementById('age').value;
           const ingredients = document.getElementById('ingredients').value;
-      
+
           // Validasi data
           if (!gender || !age || !ingredients) {
-            alert('Harap lengkapi semua field!');
-            return;
+              alert('Harap lengkapi semua field!');
+              return;
           }
-          
+
           const json_file = {
-            gender: gender,
-            age: age,
-            ingredients: ingredients
+              gender: gender,
+              age: age,
+              ingredients: ingredients
           };
-          
+
           const response = await fetch('http://localhost:5000/predict', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-          body: JSON.stringify(json_file)  // Mengirim data formulir sebagai string JSON
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(json_file)  // Mengirim data formulir sebagai string JSON
           });
 
-
-          if (!response.ok){
-            throw new Error(response.statusText);
+          if (!response.ok) {
+              throw new Error(response.statusText);
           }
 
           try {
-            
-            const result = await response.json();
+              const result = await response.json(); // Mengambil hasil JSON
 
-            if (result.error) {
-              alert('Error: ' + result.error);
-            } else {
-              // Ambil prediksi dari hasil JSON
-              const predictions = result.prediction;
+              if (result.error) {
+                  alert('Error: ' + result.error);
+              } else {
+                  // Ambil prediksi dari hasil JSON
+                  const predictions = result.prediction;
 
-              // Format data untuk ditampilkan
-              let message = 'Prediksi:\n';
-              predictions.forEach((item, index) => {
-                message += `Recipe ${index + 1}:\n`;
-                message += `  Name: ${item.recipe_name}\n`;
-                message += `  Ingredients: ${item.ingredients_list}\n`;
-                message += `  Image URL: ${item.image_url}\n\n`;
-              });
+                  // Clear previous table data
+                  const tbody = document.getElementById('result-table').getElementsByTagName('tbody')[0];
+                  tbody.innerHTML = ''; // Kosongkan baris yang ada sebelumnya
 
-              // Tampilkan data di alert
-              alert(message);
-            }
-          } 
-          catch (error) {
-            console.error(error);
-            alert('Terjadi kesalahan saat mengirim data.');
+                  // Populate the table with new data
+                  predictions.forEach((item) => {
+                      const row = tbody.insertRow(); // Buat baris baru
+                      const cellName = row.insertCell(0);
+                      const cellIngredients = row.insertCell(1);
+                      const cellImage = row.insertCell(2);
+
+                      cellName.textContent = item.recipe_name; // Set nama resep
+                      cellIngredients.textContent = item.ingredients_list; // Set bahan
+                      const img = document.createElement('img'); // Buat elemen gambar
+                      img.src = item.image_url; // Set sumber gambar
+                      img.alt = item.recipe_name; // Set teks alternatif
+                      img.style.width = '100px'; // Set lebar gambar
+                      cellImage.appendChild(img); // Tambahkan gambar ke sel
+                  });
+              }
+          } catch (error) {
+              console.error(error);
+              alert('Terjadi kesalahan saat mengirim data.');
           }
-        });
-      </script>
+      });
+    </script>
       
       
   </body>

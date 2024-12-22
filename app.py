@@ -82,7 +82,7 @@ def predict():
         recommendations = menu_bergizi3.iloc[indices[0]]
         
         # Prepare response
-        prediction = recommendations[['recipe_name', 'ingredients_list', 'image_url']]
+        prediction = recommendations.head(3)[['recipe_name', 'ingredients_list', 'image_url']]
 
         # json_data = list_bahan.to_json(orient='records')
         json_data = prediction.to_json(orient='records')
