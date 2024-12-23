@@ -307,7 +307,7 @@ document.addEventListener("click", function (event) {
       </button>      
   </div>
   <!--tabel hasil-->
-  <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-7xl mt-4">
+  <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-5xl mt-4">
     <h1 style="text-align: center;"><b>Tabel Resep Masakan</b></h1>
 <table id="result-table" border="1">
     <thead>
@@ -575,7 +575,8 @@ document.addEventListener("click", function (event) {
                       const img = document.createElement('img'); // Buat elemen gambar
                       img.src = item.image_url; // Set sumber gambar
                       img.alt = item.recipe_name; // Set teks alternatif
-                      img.style.width = '100px'; // Set lebar gambar
+                      img.style.width = '250px'; // Set lebar gambar
+                      cellImage.style.textAlign = 'center';
                       cellImage.appendChild(img); // Tambahkan gambar ke sel
                   });
               }
